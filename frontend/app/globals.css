@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Midnight Theme - CSS Custom Properties */
+/* Mirrors Tailwind tokens for consistency */
+:root {
+  --color-midnight-bg: #0F172A;
+  --color-primary-violet: #8B5CF6;
+  --color-secondary-indigo: #6366F1;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #94A3B8;
+}
+
+/* Glassmorphism Base Styles - Premium Midnight Theme */
+/* Reusable utility class for glassmorphic card effects */
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/10 rounded-lg;
+  }
+}
+
+/* Premium Animations */
+@layer utilities {
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
