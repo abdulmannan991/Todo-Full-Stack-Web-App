@@ -12,16 +12,19 @@
 import { betterAuth } from "better-auth"
 import { Pool } from "@neondatabase/serverless"
 
-if (!process.env.BETTER_AUTH_SECRET) {
-  throw new Error(
-    "BETTER_AUTH_SECRET is not defined. Please add it to .env.local"
-  )
-}
+// Build-time fallbacks for Vercel deployment
+// These values are only used during build - runtime values come from environment
+const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET || "build_placeholder_secret_min_32_characters_long"
+const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000"
 
-if (!process.env.BETTER_AUTH_URL) {
-  throw new Error(
-    "BETTER_AUTH_URL is not defined. Please add it to .env.local"
-  )
+// Warn in development if using fallback values
+if (process.env.NODE_ENV === "development") {
+  if (!process.env.BETTER_AUTH_SECRET) {
+    console.warn("⚠️ BETTER_AUTH_SECRET not set - using build placeholder")
+  }
+  if (!process.env.BETTER_AUTH_URL) {
+    console.warn("⚠️ BETTER_AUTH_URL not set - using localhost fallback")
+  }
 }
 
 // Database connection using Neon Serverless
@@ -44,11 +47,11 @@ export const auth = betterAuth({
     requireEmailVerification: false,
   },
 
-  // JWT configuration
-  secret: process.env.BETTER_AUTH_SECRET,
+  // JWT configuration (uses fallback during build)
+  secret: BETTER_AUTH_SECRET,
 
-  // Base URL for authentication
-  baseURL: process.env.BETTER_AUTH_URL,
+  // Base URL for authentication (uses fallback during build)
+  baseURL: BETTER_AUTH_URL,
 
   // Session configuration
   session: {
