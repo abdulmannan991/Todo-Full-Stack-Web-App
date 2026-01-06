@@ -12,7 +12,7 @@ SECURITY NOTE:
 - TaskUpdateRequest allows partial updates (status and/or title)
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from datetime import datetime
 from typing import Optional
 from models.task import TaskStatus
@@ -35,7 +35,8 @@ class TaskCreateRequest(BaseModel):
         None, max_length=5000, description="Optional task description"
     )
 
-    @validator("title")
+    @field_validator("title")
+    @classmethod
     def title_must_not_be_empty(cls, v):
         """Ensure title is not just whitespace."""
         if not v or not v.strip():
@@ -62,7 +63,8 @@ class TaskUpdateRequest(BaseModel):
         None, min_length=1, max_length=500, description="New task title"
     )
 
-    @validator("title")
+    @field_validator("title")
+    @classmethod
     def title_must_not_be_empty(cls, v):
         """Ensure title is not just whitespace if provided."""
         if v is not None and (not v or not v.strip()):
@@ -93,5 +95,4 @@ class TaskResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True  # Allow creation from SQLModel instances (Pydantic v2)
+    model_config = ConfigDict(from_attributes=True)  # Allow creation from SQLModel instances (Pydantic v2)
