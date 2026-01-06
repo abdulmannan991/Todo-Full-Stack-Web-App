@@ -22,6 +22,8 @@ import { getDisplayName } from '@/utils/profile'
 import Footer from '@/components/Footer'
 import { toast } from 'sonner'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 export default function ProfilePage() {
   const router = useRouter()
   const { data: session, isPending, refreshSession } = useSession()
@@ -130,7 +132,7 @@ export default function ProfilePage() {
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await fetch('http://localhost:8000/users/me/avatar', {
+      const response = await fetch(`${API_BASE_URL}/users/me/avatar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.token}`,
@@ -209,7 +211,7 @@ export default function ProfilePage() {
                 <div className="relative">
                   {user?.profile_image_url || avatarPreview ? (
                     <img
-                      src={avatarPreview || `http://localhost:8000${user?.profile_image_url}`}
+                      src={avatarPreview || `${API_BASE_URL}${user?.profile_image_url}`}
                       alt="Profile"
                       className="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-primary-violet/30"
                     />

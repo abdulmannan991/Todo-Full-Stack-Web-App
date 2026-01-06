@@ -14,6 +14,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 interface TaskCreateFormProps {
   onTaskCreated?: () => void; // Callback to refresh task list
 }
@@ -73,7 +75,7 @@ export default function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
 
     try {
       // Call POST /tasks endpoint (T085)
-      const response = await fetch("http://localhost:8000/tasks/", {
+      const response = await fetch(`${API_BASE_URL}/tasks/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

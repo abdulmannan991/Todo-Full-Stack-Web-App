@@ -16,6 +16,8 @@ import { useSession, signOut } from '@/lib/auth-client'
 import { getDisplayName } from '@/utils/profile'
 import { useState, useEffect } from 'react'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 export default function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
@@ -91,7 +93,7 @@ export default function Navbar() {
                 {/* Profile Image or Icon */}
                 {session?.user?.profile_image_url ? (
                   <img
-                    src={`http://localhost:8000${session.user.profile_image_url}`}
+                    src={`${API_BASE_URL}${session.user.profile_image_url}`}
                     alt="Profile"
                     className="w-10 h-10 rounded-full object-cover border-2 border-primary-violet/50"
                   />
@@ -196,7 +198,7 @@ export default function Navbar() {
                   <div className="flex items-center space-x-3 pb-3 border-b border-white/10">
                     {session?.user?.profile_image_url ? (
                       <img
-                        src={`http://localhost:8000${session.user.profile_image_url}`}
+                        src={`${API_BASE_URL}${session.user.profile_image_url}`}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover border-2 border-primary-violet/50"
                       />

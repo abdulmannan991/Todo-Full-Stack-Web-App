@@ -21,6 +21,8 @@ import TaskSkeleton from '@/components/TaskSkeleton'
 import EmptyState from '@/components/EmptyState'
 import { Task } from '@/components/TaskCard'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 export default function DashboardPage() {
   const router = useRouter()
   const { data: session, isPending } = useSession()
@@ -51,7 +53,7 @@ export default function DashboardPage() {
 
     setIsLoadingStats(true)
     try {
-      const response = await fetch('http://localhost:8000/users/me/stats', {
+      const response = await fetch(`${API_BASE_URL}/users/me/stats`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.token}`,
@@ -80,7 +82,7 @@ export default function DashboardPage() {
 
     setIsLoadingTasks(true)
     try {
-      const response = await fetch('http://localhost:8000/tasks/', {
+      const response = await fetch(`${API_BASE_URL}/tasks/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.token}`,

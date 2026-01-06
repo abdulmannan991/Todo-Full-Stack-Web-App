@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 interface DeleteTaskButtonProps {
   taskId: number;
   taskTitle: string;
@@ -51,7 +53,7 @@ export default function DeleteTaskButton({
 
     try {
       // Call DELETE /tasks/{id} endpoint
-      const response = await fetch(`http://localhost:8000/tasks/${taskId}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${session.token}`,

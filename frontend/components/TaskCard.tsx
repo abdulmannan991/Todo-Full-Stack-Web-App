@@ -21,6 +21,8 @@ import StatusBadge from "./StatusBadge";
 import EditableTitle from "./EditableTitle";
 import DeleteTaskButton from "./DeleteTaskButton";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 export interface Task {
   id: number;
   title: string;
@@ -58,7 +60,7 @@ export default function TaskCard({ task, onTaskUpdated }: TaskCardProps) {
 
     try {
       // Call PATCH /tasks/{id} endpoint
-      const response = await fetch(`http://localhost:8000/tasks/${task.id}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

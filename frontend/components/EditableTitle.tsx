@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 interface EditableTitleProps {
   taskId: number;
   initialTitle: string;
@@ -100,7 +102,7 @@ export default function EditableTitle({
 
     try {
       // Call PATCH /tasks/{id} endpoint
-      const response = await fetch(`http://localhost:8000/tasks/${taskId}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
