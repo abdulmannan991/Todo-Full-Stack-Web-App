@@ -3,9 +3,15 @@ import path from 'path'
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Explicitly set workspace root to monorepo root (two levels up)
-  // This silences the warning about multiple lockfiles
-  outputFileTracingRoot: path.join(__dirname, '../../'),
+
+  // CRITICAL: Monorepo dependency tracing for Vercel deployment
+  // This tells Next.js to trace dependencies up to the monorepo root
+  // Fixes: 'Error: Cannot find module next/dist/compiled/next-server/server.runtime.prod.js'
+  outputFileTracingRoot: path.join(__dirname, '../'),
+
+  // Enable standalone output for better Vercel compatibility
+  // This creates a self-contained production build
+  output: 'standalone',
 
   // Performance optimizations for LCP improvement
   experimental: {
