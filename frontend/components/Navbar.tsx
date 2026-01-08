@@ -33,6 +33,7 @@ export default function Navbar() {
   const isAuthenticated = mounted && !!session?.user
 
   const handleLogout = async () => {
+    
     await signOut()
     setMobileMenuOpen(false)
     router.push('/')
@@ -85,49 +86,69 @@ export default function Navbar() {
 
           {/* Desktop User Profile Section - Hidden on mobile */}
           {isAuthenticated ? (
-            <div className="hidden sm:flex items-center space-x-4">
-              {/* Profile Info */}
-              <Link href={"/profile"}>
-              <div className="flex items-center space-x-3">
-                {/* Profile Image or Icon */}
-                {session?.user?.profile_image_url ? (
-                  <img
-                    src={`${API_BASE_URL}${session.user.profile_image_url}`}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full object-cover border-2 border-primary-violet/50"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-violet/20 to-secondary-indigo/20 border-2 border-primary-violet/50 flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-primary-violet"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
-                )}
-
-                {/* Display Name */}
-                <span className="hidden md:block text-text-primary font-medium">
-                  {displayName}
-                </span>
-              </div>
-              </Link>
+  <div className="hidden sm:flex items-center space-x-4">
+    {/* Profile Info */}
+    <Link href={"/profile"}>
+      <div className="flex items-center space-x-3 group">
+        {/* Profile Image or Icon */}
+        <div className="relative w-10 h-10 aspect-square rounded-full overflow-hidden border-2 border-primary-violet/50 transition-all duration-300 group-hover:border-primary-violet shadow-lg shadow-primary-violet/10">
+          {session?.user?.profile_image_url ? (
+            <img
+              src={`${API_BASE_URL}${session.user.profile_image_url}`}
+              alt="Profile"
+              className="w-full h-full object-cover" 
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary-violet/20 to-secondary-indigo/20 flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-primary-violet"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Username with hover effect */}
+        <span className="text-sm font-medium text-text-primary group-hover:text-primary-violet transition-colors">
+          {session?.user?.name || 'User'}
+        </span>
+      </div>
+    </Link>
 
               {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-primary-violet hover:text-secondary-indigo transition-all duration-200 rounded-lg hover:bg-white/5"
-              >
-                Logout
-              </button>
+             <motion.button
+  onClick={handleLogout}
+  whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+  whileTap={{ scale: 0.95, opacity: 0.7 }}
+  className="w-full px-4  py-2 text-sm font-medium text-primary-violet hover:text-secondary-indigo rounded-lg transition-all duration-200 text-left flex items-center gap-2"
+>
+  <motion.span
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0, x: -10 }}
+    transition={{ duration: 0.2 }}
+  >
+    Logout
+  </motion.span>
+  
+  {/* Optional: Add a small logout icon that slides out */}
+  <svg 
+    className="w-4 h-4" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  </svg>
+</motion.button>
             </div>
           ) : (
             <div className="hidden sm:flex items-center space-x-4">
@@ -252,12 +273,30 @@ export default function Navbar() {
                   </Link>
 
                   {/* Logout Button */}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full px-4 py-2 text-sm font-medium text-primary-violet hover:text-secondary-indigo hover:bg-white/5 rounded-lg transition-all duration-200 text-left"
-                  >
-                    Logout
-                  </button>
+                 <motion.button
+  onClick={handleLogout}
+  whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+  whileTap={{ scale: 0.95, opacity: 0.7 }}
+  className="w-full px-4 py-2 text-sm font-medium text-primary-violet hover:text-secondary-indigo rounded-lg transition-all duration-200 text-left flex items-center gap-2"
+>
+  <motion.span
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0, x: -10 }}
+    transition={{ duration: 0.2 }}
+  >
+    Logout
+  </motion.span>
+  
+  {/* Optional: Add a small logout icon that slides out */}
+  <svg 
+    className="w-4 h-4" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  </svg>
+</motion.button>
                 </>
               ) : (
                 <>
