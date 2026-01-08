@@ -19,7 +19,6 @@ export default function RootLayout({
       <body>
         <Navbar />
         {children}
-        <SpeedInsights />
         <Toaster
           position="top-right"
           toastOptions={{
@@ -32,6 +31,8 @@ export default function RootLayout({
             className: 'glass-toast',
           }}
         />
+        <SpeedInsights />
+
       </body>
     </html>
   )
