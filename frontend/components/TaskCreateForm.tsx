@@ -13,8 +13,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+import { API_BASE_URL } from "@/lib/config";
 
 interface TaskCreateFormProps {
   onTaskCreated?: () => void; // Callback to refresh task list
@@ -64,13 +63,6 @@ export default function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
       return;
     }
 
-    // Check authentication
-    if (!session?.token) {
-      toast.error("Authentication required");
-      window.location.href = "/login";
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -79,7 +71,7 @@ export default function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.token}`,
+          Authorization: `Bearer ${session?.token || ''}`,
         },
         body: JSON.stringify({
           title: title.trim(),
@@ -123,9 +115,16 @@ export default function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
       }
     } catch (error) {
       console.error("Task creation error:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create task"
-      );
+
+      // Provide user-friendly error messages based on error type
+      if (error instanceof TypeError || (error instanceof Error && error.message.includes('fetch'))) {
+        // Network error - connection issue, not auth problem
+        toast.error("Connection error - please check your internet and try again");
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to create task"
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }

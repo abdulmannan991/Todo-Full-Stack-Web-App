@@ -14,9 +14,8 @@ import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession, signOut } from '@/lib/auth-client'
 import { getDisplayName } from '@/utils/profile'
+import { API_BASE_URL } from '@/lib/config'
 import { useState, useEffect } from 'react'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function Navbar() {
   const router = useRouter()
@@ -195,6 +194,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   {/* Profile Info */}
+                  <Link href={"/profile"}>
                   <div className="flex items-center space-x-3 pb-3 border-b border-white/10">
                     {session?.user?.profile_image_url ? (
                       <img
@@ -223,6 +223,7 @@ export default function Navbar() {
                       {displayName}
                     </span>
                   </div>
+                  </Link>
 
                   {/* Navigation Links */}
                   <Link

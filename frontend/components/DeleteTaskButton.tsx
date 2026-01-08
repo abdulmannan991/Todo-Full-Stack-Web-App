@@ -19,8 +19,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+import { API_BASE_URL } from "@/lib/config";
 
 interface DeleteTaskButtonProps {
   taskId: number;
@@ -41,64 +40,40 @@ export default function DeleteTaskButton({
    * Handle task deletion (T112)
    * Calls DELETE /tasks/{id} endpoint
    */
-  const handleDelete = async () => {
-    // Check authentication
-    if (!session?.token) {
-      toast.error("Authentication required");
-      window.location.href = "/login";
-      return;
+ const handleDelete = async () => {
+  setIsDeleting(true);
+  try {
+    // 1. Get token directly to prevent "Not authenticated" race conditions
+    const currentToken = localStorage.getItem('auth_token');
+    
+    // 2. Use our new resilient apiClient
+    const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${currentToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        toast.error("Session expired.");
+        return;
+      }
+      throw new Error("Delete failed");
     }
 
-    setIsDeleting(true);
+    toast.success("Task deleted");
+    if (onTaskDeleted) onTaskDeleted();
 
-    try {
-      // Call DELETE /tasks/{id} endpoint
-      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      });
-
-      // CRITICAL: Check response.ok BEFORE attempting to parse JSON
-      // DELETE returns 204 No Content (empty body)
-      if (!response.ok) {
-        let errorMessage = "Failed to delete task";
-
-        try {
-          // Attempt to parse JSON error body if present
-          const errorData = await response.json();
-          errorMessage = errorData.detail || errorMessage;
-        } catch {
-          // Response body is empty or not JSON - use status code
-          if (response.status === 401 || response.status === 403) {
-            errorMessage = "Authentication required";
-            window.location.href = "/login";
-            return;
-          }
-          errorMessage = `Server error (${response.status})`;
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      // Success: 204 No Content - no JSON body to parse
-      toast.success("Task deleted!");
-      setShowConfirmDialog(false);
-
-      // Trigger task list refresh
-      if (onTaskDeleted) {
-        onTaskDeleted();
-      }
-    } catch (error) {
-      console.error("Task deletion error:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to delete task"
-      );
-    } finally {
-      setIsDeleting(false);
+  } catch (error) {
+    // 3. Catch the NETWORK_ERROR we defined in api-client.ts
+    if (error instanceof Error && error.message === 'NETWORK_ERROR') {
+      toast.error("Network blink detected. Task might have been deleted, please refresh.");
+    } else {
+      toast.error("Failed to delete task.");
     }
-  };
+  }
+};
 
   /**
    * Handle keyboard navigation in modal (T114)

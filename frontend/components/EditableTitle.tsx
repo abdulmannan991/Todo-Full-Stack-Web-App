@@ -19,8 +19,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+import { API_BASE_URL } from "@/lib/config";
 
 interface EditableTitleProps {
   taskId: number;
@@ -76,6 +75,10 @@ export default function EditableTitle({
    * Save title to backend (T105)
    * Calls PATCH /tasks/{id} with new title
    */
+/**
+   * Save title to backend (T105)
+   * Calls PATCH /tasks/{id} with new title
+   */
   const handleSave = async () => {
     const trimmedTitle = tempTitle.trim();
 
@@ -91,46 +94,38 @@ export default function EditableTitle({
       return;
     }
 
-    // Check authentication
-    if (!session?.token) {
-      toast.error("Authentication required");
-      window.location.href = "/login";
-      return;
-    }
-
     setIsSaving(true);
 
     try {
+      // FIX: Pull token directly from localStorage to prevent "Not authenticated" race conditions
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
       // Call PATCH /tasks/{id} endpoint
       const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.token}`,
+          Authorization: `Bearer ${currentToken || session?.token || ''}`,
         },
         body: JSON.stringify({
           title: trimmedTitle,
         }),
       });
 
-      // CRITICAL: Check response.ok BEFORE calling response.json()
+      // Handle AUTH errors specifically
       if (!response.ok) {
-        let errorMessage = "Failed to update title";
+        if (response.status === 401 || response.status === 403) {
+          toast.error("Session expired. Please log in again.");
+          return; // Let auth-client.ts handle the actual logout/redirect
+        }
 
+        let errorMessage = "Failed to update title";
         try {
-          // Attempt to parse JSON error body if present
           const errorData = await response.json();
           errorMessage = errorData.detail || errorMessage;
         } catch {
-          // Response body is empty or not JSON - use status code
-          if (response.status === 401 || response.status === 403) {
-            errorMessage = "Authentication required";
-            window.location.href = "/login";
-            return;
-          }
           errorMessage = `Server error (${response.status})`;
         }
-
         throw new Error(errorMessage);
       }
 
@@ -149,9 +144,15 @@ export default function EditableTitle({
       }
     } catch (error) {
       console.error("Title update error:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update title"
-      );
+
+      // FIX: Detect if it's a network blink (TypeError or our custom NETWORK_ERROR)
+      if (error instanceof TypeError || (error instanceof Error && (error.message.includes('fetch') || error.message === 'NETWORK_ERROR'))) {
+        toast.error("Connection unstable - please check your internet");
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to update title"
+        );
+      }
     } finally {
       setIsSaving(false);
     }

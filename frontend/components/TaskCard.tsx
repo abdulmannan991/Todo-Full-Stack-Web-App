@@ -17,11 +17,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
+import { API_BASE_URL } from "@/lib/config";
 import StatusBadge from "./StatusBadge";
 import EditableTitle from "./EditableTitle";
 import DeleteTaskButton from "./DeleteTaskButton";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export interface Task {
   id: number;
@@ -46,74 +45,47 @@ export default function TaskCard({ task, onTaskUpdated }: TaskCardProps) {
    * Handle task completion toggle (T098, T099)
    * Calls PATCH /tasks/{id} with status update
    */
-  const handleToggleComplete = async () => {
-    if (task.status === "completed" || isUpdating) return; // One-way transition only
+ const handleToggleComplete = async () => {
+  if (task.status === "completed" || isUpdating) return;
+  setIsUpdating(true);
 
-    // Check authentication
-    if (!session?.token) {
-      toast.error("Authentication required");
-      window.location.href = "/login";
-      return;
-    }
+  try {
+    // Use the latest token directly from localStorage if hook is lagging
+    const currentToken = localStorage.getItem('auth_token');
+    
+    const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${currentToken || session?.token || ''}`,
+      },
+      body: JSON.stringify({ status: "completed" }),
+    });
 
-    setIsUpdating(true);
-
-    try {
-      // Call PATCH /tasks/{id} endpoint
-      const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.token}`,
-        },
-        body: JSON.stringify({
-          status: "completed",
-        }),
-      });
-
-      // CRITICAL: Check response.ok BEFORE calling response.json()
-      if (!response.ok) {
-        let errorMessage = "Failed to update task";
-
-        try {
-          // Attempt to parse JSON error body if present
-          const errorData = await response.json();
-          errorMessage = errorData.detail || errorMessage;
-        } catch {
-          // Response body is empty or not JSON - use status code
-          if (response.status === 401 || response.status === 403) {
-            errorMessage = "Authentication required";
-            window.location.href = "/login";
-            return;
-          }
-          errorMessage = `Server error (${response.status})`;
-        }
-
-        throw new Error(errorMessage);
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        // Let the auth-client handle the redirect, don't force it here
+        return;
       }
-
-      // Parse response JSON safely
-      await response.json();
-
-      // Success: Show green check animation (T100)
-      setShowCheckAnimation(true);
-      toast.success("Task completed!");
-
-      // Refresh task list after animation
-      setTimeout(() => {
-        if (onTaskUpdated) {
-          onTaskUpdated();
-        }
-      }, 300);
-    } catch (error) {
-      console.error("Task update error:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update task"
-      );
-    } finally {
-      setIsUpdating(false);
+      throw new Error(`Server error: ${response.status}`);
     }
-  };
+
+    setShowCheckAnimation(true);
+    toast.success("Task completed!");
+    if (onTaskUpdated) onTaskUpdated();
+    
+  } catch (error) {
+    if (error instanceof Error && error.message === 'NETWORK_ERROR') {
+      toast.error("Network connection unstable. Retrying...");
+    } else {
+      console.error("Task update error:", error);
+      toast.error("Failed to update task. Please try again.");
+    }
+  } finally {
+    setIsUpdating(false);
+  }
+};
 
   /**
    * Format date to human-readable format.

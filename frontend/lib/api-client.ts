@@ -5,7 +5,7 @@
  * Created by @ui-auth-expert (T037)
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+import { API_BASE_URL } from './config'
 
 /**
  * Get the session token from cookies
@@ -44,63 +44,41 @@ export async function apiClient(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  // Get session token
-  const token = getSessionToken()
+  const token = getSessionToken();
+  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
-  // Build full URL
-  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
-
-  // Merge headers with Authorization token
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-  }
-
-  // Merge existing headers if provided
-  if (options.headers) {
-    const existingHeaders = new Headers(options.headers)
-    existingHeaders.forEach((value, key) => {
-      headers[key] = value
-    })
-  }
+    ...(options.headers as Record<string, string>),
+  };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Make the request
-  const response = await fetch(fullUrl, {
-    ...options,
-    headers,
-  })
+  try {
+    const response = await fetch(fullUrl, { ...options, headers });
 
-  // Handle 401 Unauthorized - redirect to login
-  if (response.status === 401) {
-    // Only redirect if we're on the client
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login'
-    }
-    throw new Error('Unauthorized - redirecting to login')
-  }
-
-  // Log non-OK responses for debugging
-  if (!response.ok) {
-    const statusText = response.statusText || 'Unknown Error'
-    console.error(`[API Error] ${response.status} ${statusText} - ${fullUrl}`)
-
-    // Try to parse error body
-    try {
-      const errorBody = await response.clone().text()
-      if (errorBody) {
-        console.error(`[API Error Body]`, errorBody)
+    // ONLY redirect if the server explicitly says 401
+    if (response.status === 401) {
+      if (typeof window !== 'undefined') {
+        // Optional: Only redirect if you really want to force logout
+        // window.location.href = '/login'; 
       }
-    } catch (e) {
-      // Ignore parsing errors
+      throw new Error('Unauthorized');
     }
+
+    return response;
+  } catch (error) {
+    // Check if it's a network error
+    if (error instanceof TypeError || (error instanceof Error && error.message.includes('fetch'))) {
+       console.warn('[API] Network error detected - preserving session');
+       // Throw a specific error type so the UI knows not to log out
+       throw new Error('NETWORK_ERROR');
+    }
+    throw error;
   }
-
-  return response
 }
-
 /**
  * Convenience method for GET requests
  */

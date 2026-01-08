@@ -19,10 +19,9 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useSession } from '@/lib/auth-client'
 import { getDisplayName } from '@/utils/profile'
+import { API_BASE_URL } from '@/lib/config'
 import Footer from '@/components/Footer'
 import { toast } from 'sonner'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function ProfilePage() {
   const router = useRouter()

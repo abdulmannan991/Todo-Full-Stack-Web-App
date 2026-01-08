@@ -8,8 +8,7 @@
  */
 
 import * as React from 'react'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+import { API_BASE_URL } from './config'
 
 // User data interface
 interface User {
@@ -75,7 +74,7 @@ const removeSession = () => {
 // User must login explicitly after signup to obtain valid session
 export const signUp = {
   email: async ({ email, password, name }: { email: string; password: string; name?: string }) => {
-    const response = await fetch(`${API_URL}/api/auth/sign-up/email`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/sign-up/email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,7 +98,7 @@ export const signUp = {
 // SignIn function that calls FastAPI backend
 export const signIn = {
   email: async ({ email, password }: { email: string; password: string }) => {
-    const response = await fetch(`${API_URL}/api/auth/sign-in/email`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/sign-in/email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -149,7 +148,7 @@ export const useSession = () => {
 
     try {
       // Validate session against backend (TRUSTED)
-      const response = await fetch(`${API_URL}/users/me`, {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localSession.token}`,
@@ -197,10 +196,24 @@ export const useSession = () => {
       setError(null)
     } catch (err) {
       console.error('[Auth] Session validation error:', err)
-      // Network error or backend unavailable - clear session for safety
-      removeSession()
-      setSession(null)
-      setError(err instanceof Error ? err : new Error('Session validation failed'))
+
+      // CRITICAL: Distinguish between network errors and auth failures
+      // Network errors (TypeError, DNS, CORS, timeout) should PRESERVE the session
+      // Only actual auth failures should clear the session
+
+      if (err instanceof TypeError || (err instanceof Error && err.message.includes('fetch'))) {
+        // Network error (Failed to fetch, DNS, CORS, ERR_NETWORK_CHANGED)
+        // Keep the session alive - this is just a connectivity issue
+        console.warn('[Auth] Network error during validation - keeping session alive:', err.message)
+        setSession(localSession) // Keep local session active
+        setError(null) // Don't set error state - session is still valid
+      } else {
+        // Unknown error - be conservative and clear session
+        console.error('[Auth] Unknown error during validation - clearing session')
+        removeSession()
+        setSession(null)
+        setError(err instanceof Error ? err : new Error('Session validation failed'))
+      }
     } finally {
       setIsPending(false)
     }
