@@ -95,4 +95,11 @@ class TaskResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)  # Allow creation from SQLModel instances (Pydantic v2)
+    model_config = ConfigDict(
+        from_attributes=True,
+        # This force-serializes datetimes to include the 'Z' (Zulu/UTC) suffix
+        json_encoders={
+            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%SZ") if v.tzinfo is None else v.isoformat()
+        }
+    )
+
