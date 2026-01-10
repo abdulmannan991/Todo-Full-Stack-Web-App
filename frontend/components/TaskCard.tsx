@@ -97,31 +97,29 @@ export default function TaskCard({ task, onTaskUpdated }: TaskCardProps) {
   /**
    * Format date to human-readable format with UTC correction.
    */
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    
-    // getTime() returns absolute milliseconds since 1970 UTC
-    // This removes the 5-hour local offset comparison error
-    const diffMs = now.getTime() - date.getTime();
-    
-    // Use a 30-second buffer for "Just now" to account for small clock drifts
-    if (diffMs < 30000) return "Just now";
-    
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+const formatDate = (dateString: string): string => {
+  // 1. If the string doesn't end in Z, add it to FORCE UTC interpretation
+  const utcString = dateString.endsWith('Z') ? dateString : `${dateString}Z`;
+  
+  // 2. new Date(utcString) will now automatically convert 
+  // the server's 5:00 AM UTC to 10:00 AM Karachi time
+  const date = new Date(utcString);
+  const now = new Date();
+  
+  // 3. Compare using absolute timestamps
+  const diffMs = now.getTime() - date.getTime();
+  
+  // 60-second safety buffer
+  if (diffMs < 60000) return "Just now";
+  
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
 
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-  };
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  return date.toLocaleDateString();
+};
 
   /**
    * Truncate description to prevent card overflow.
