@@ -133,10 +133,10 @@ ALL TESTS PASSED - USER ISOLATION VERIFIED
 
 ```env
 # Authentication Secret (MUST match frontend)
-BETTER_AUTH_SECRET=NxURhidtCEEz+c7dZcTjUcIJ2TX37sEvqNb88wxD2KM=
+BETTER_AUTH_SECRET=your-secret-key-here-generate-with-openssl
 
 # Database Connection (Neon PostgreSQL)
-DATABASE_URL=postgresql://neondb_owner:npg_ZzwV0b5ixLYq@ep-wispy-lake-a1kfk8lp-pooler.ap-southeast-1.aws.neon.tech/todo-app?sslmode=require&channel_binding=require
+DATABASE_URL=postgresql://username:password@your-neon-host.neon.tech/dbname?sslmode=require
 
 # Google Gemini API Configuration
 GEMINI_API_KEY=your-gemini-api-key-here  # ⚠️ Replace with actual key
