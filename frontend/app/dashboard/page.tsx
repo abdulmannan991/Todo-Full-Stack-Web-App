@@ -28,8 +28,11 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoadingTasks, setIsLoadingTasks] = useState(true)
+  const [tasksError, setTasksError] = useState<string | null>(null)
   const [stats, setStats] = useState<{ total_tasks: number; completed_tasks: number } | null>(null)
   const [isLoadingStats, setIsLoadingStats] = useState(true)
+  const [statsError, setStatsError] = useState<string | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Fix hydration: Only access session after mount
   useEffect(() => {
@@ -51,6 +54,7 @@ export default function DashboardPage() {
     if (!session?.token) return
 
     setIsLoadingStats(true)
+    setStatsError(null)
     try {
       const response = await fetch(`${API_BASE_URL}/users/me/stats`, {
         method: 'GET',
@@ -67,6 +71,7 @@ export default function DashboardPage() {
       setStats(data)
     } catch (error) {
       console.error('Error fetching stats:', error)
+      setStatsError('Failed to load statistics')
     } finally {
       setIsLoadingStats(false)
     }
@@ -80,6 +85,7 @@ export default function DashboardPage() {
     if (!session?.token) return
 
     setIsLoadingTasks(true)
+    setTasksError(null)
     try {
       const response = await fetch(`${API_BASE_URL}/tasks/`, {
         method: 'GET',
@@ -96,6 +102,7 @@ export default function DashboardPage() {
       setTasks(data)
     } catch (error) {
       console.error('Error fetching tasks:', error)
+      setTasksError('Failed to load tasks')
     } finally {
       setIsLoadingTasks(false)
     }
@@ -109,6 +116,15 @@ export default function DashboardPage() {
     }
   }, [mounted, session?.token])
 
+  /**
+   * Manual refresh handler for user-initiated data sync
+   */
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await Promise.all([fetchStats(), fetchTasks()])
+    setIsRefreshing(false)
+  }
+
   const isLoading = !mounted || isPending || !session?.user
   const displayName = mounted && session?.user ? getDisplayName(session.user) : 'User'
 
@@ -121,15 +137,45 @@ export default function DashboardPage() {
           </div>
         ) : (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Welcome Heading */}
-          <motion.h1
-            className="text-3xl sm:text-4xl font-bold text-text-primary mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            Welcome, {displayName}!
-          </motion.h1>
+          {/* Welcome Heading with Refresh Button */}
+          <div className="flex items-center justify-between mb-8">
+            <motion.h1
+              className="text-3xl sm:text-4xl font-bold text-text-primary"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              Welcome, {displayName}!
+            </motion.h1>
+
+            <motion.button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="glass-card px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-violet/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg
+                className={`w-5 h-5 text-primary-violet ${isRefreshing ? 'animate-spin' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              <span className="text-text-primary text-sm font-medium">
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              </span>
+            </motion.button>
+          </div>
 
           {/* Stats Cards */}
           <motion.div
@@ -138,6 +184,12 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
+            {statsError ? (
+              <div className="col-span-full glass-card p-6 rounded-2xl bg-red-500/10 border border-red-500/20">
+                <p className="text-red-400 text-sm">{statsError}</p>
+              </div>
+            ) : (
+              <>
             {/* Total Tasks Card */}
             <div className="glass-card p-6 rounded-2xl">
               <div className="flex items-center justify-between mb-2">
@@ -208,6 +260,8 @@ export default function DashboardPage() {
                   : `${Math.round((stats.completed_tasks / stats.total_tasks) * 100)}%`}
               </p>
             </div>
+              </>
+            )}
           </motion.div>
 
           {/* Task Creation Form (T084-T086) */}
@@ -226,8 +280,18 @@ export default function DashboardPage() {
               Your Tasks
             </h2>
 
-            {/* Loading State (T094) */}
-            {isLoadingTasks ? (
+            {/* Error State */}
+            {tasksError ? (
+              <div className="glass-card p-6 rounded-2xl bg-red-500/10 border border-red-500/20">
+                <p className="text-red-400 text-sm">{tasksError}</p>
+                <button
+                  onClick={() => fetchTasks()}
+                  className="mt-4 px-4 py-2 bg-primary-violet hover:bg-primary-violet/80 text-white rounded-lg transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : isLoadingTasks ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <TaskSkeleton count={3} />
               </div>

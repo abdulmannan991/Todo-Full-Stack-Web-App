@@ -5,7 +5,7 @@
 
 ## Summary
 
-Implement a conversational AI assistant that allows users to manage their todo tasks through natural language commands. The system integrates OpenAI ChatKit (frontend), OpenAI Agents SDK (backend), and Official MCP SDK (tool layer) to provide a stateless, scalable chat interface. Users can create, view, update, complete, and delete tasks by typing natural language commands like "Add a task to buy groceries" or "Show my pending tasks". The implementation maintains full user data isolation, conversation persistence across sessions, and graceful handling of AI service failures.
+Implement a conversational AI assistant that allows users to manage their todo tasks through natural language commands. The system integrates Google Gemini SDK (backend AI orchestration), Official MCP SDK (tool layer), and custom React chat interface (frontend) to provide a stateless, scalable chat interface. Users can create, view, update, complete, and delete tasks by typing natural language commands like "Add a task to buy groceries" or "Show my pending tasks". The implementation maintains full user data isolation, conversation persistence across sessions, and graceful handling of AI service failures.
 
 ## Technical Context
 

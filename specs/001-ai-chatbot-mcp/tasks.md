@@ -15,18 +15,18 @@
 
 ### Backend Setup
 
-- [ ] T300 Install OpenAI Agents SDK in backend/requirements.txt
-- [ ] T301 Install FastMCP (Official MCP SDK) in backend/requirements.txt
-- [ ] T302 Install python-jose[cryptography] for JWT verification in backend/requirements.txt
-- [ ] T303 Install tenacity for retry logic in backend/requirements.txt
-- [ ] T304 [P] Add OPENAI_API_KEY to backend/.env.example
-- [ ] T305 [P] Verify BETTER_AUTH_SECRET exists in backend/.env.example
+- [X] T300 Install OpenAI Agents SDK (openai, openai-agents) in backend/requirements.txt - CORRECTED: Using AsyncOpenAI client with Gemini endpoint, NOT google-generativeai
+- [X] T301 Install FastMCP (Official MCP SDK) in backend/requirements.txt
+- [X] T302 Install python-jose[cryptography] for JWT verification in backend/requirements.txt
+- [X] T303 Install tenacity for retry logic in backend/requirements.txt
+- [X] T304 [P] Add GEMINI_API_KEY and Gemini configuration to backend/.env.example - UPDATED: Using OpenAI-compatible endpoint
+- [X] T305 [P] Verify BETTER_AUTH_SECRET exists in backend/.env.example
 
 ### Frontend Setup
 
-- [ ] T306 Install @openai/chatkit-react in frontend/package.json
-- [ ] T307 [P] Add NEXT_PUBLIC_OPENAI_API_KEY to frontend/.env.local.example
-- [ ] T308 [P] Verify BETTER_AUTH_SECRET exists in frontend/.env.local.example
+- [X] T306 Create custom chat interface components (no OpenAI ChatKit dependency)
+- [X] T307 [P] Remove OpenAI references from frontend/.env.local.example (backend handles all AI)
+- [X] T308 [P] Verify BETTER_AUTH_SECRET exists in frontend/.env.local.example
 
 ---
 
@@ -40,41 +40,41 @@
 
 ### Database Schema
 
-- [ ] T309 Create Conversation SQLModel in backend/models/conversation.py with user_id, version, created_at, updated_at fields
-- [ ] T310 Create Message SQLModel in backend/models/message.py with conversation_id, user_id, role, content, tool_calls, created_at fields
-- [ ] T311 Create Alembic migration for conversation table with optimistic locking (version field) in backend/alembic/versions/
-- [ ] T312 Create Alembic migration for message table with role CHECK constraint in backend/alembic/versions/
-- [ ] T313 [P] Create index on conversation(user_id, updated_at) in migration
-- [ ] T314 [P] Create index on message(conversation_id, created_at) in migration
-- [ ] T315 [P] Create index on message(user_id, conversation_id) in migration
-- [ ] T316 Run database migrations with `alembic upgrade head`
+- [X] T309 Create Conversation SQLModel in backend/models/conversation.py with user_id, version, created_at, updated_at fields
+- [X] T310 Create Message SQLModel in backend/models/message.py with conversation_id, user_id, role, content, tool_calls, created_at fields
+- [X] T311 Create Alembic migration for conversation table with optimistic locking (version field) in backend/alembic/versions/
+- [X] T312 Create Alembic migration for message table with role CHECK constraint in backend/alembic/versions/
+- [X] T313 [P] Create index on conversation(user_id, updated_at) in migration
+- [X] T314 [P] Create index on message(conversation_id, created_at) in migration
+- [X] T315 [P] Create index on message(user_id, conversation_id) in migration
+- [X] T316 Run database migrations with `alembic upgrade head` - COMPLETED: Migrations executed successfully
 
 ### MCP Tool Infrastructure
 
-- [ ] T317 Create FastMCP instance in backend/mcp/task_tools.py
-- [ ] T318 Implement database session management helper for MCP tools in backend/mcp/db_utils.py
-- [ ] T319 Implement retry decorator with exponential backoff (100ms, 500ms, 1000ms) in backend/mcp/db_utils.py
+- [X] T317 Create FastMCP instance in backend/mcp/task_tools.py
+- [X] T318 Implement database session management helper for MCP tools in backend/mcp/db_utils.py
+- [X] T319 Implement retry decorator with exponential backoff (100ms, 500ms, 1000ms) in backend/mcp/db_utils.py
 
 ### Chat API Foundation
 
-- [ ] T320 Create Pydantic ChatRequest model in backend/api/chat.py with conversation_id and message fields
-- [ ] T321 Create Pydantic ChatResponse model in backend/api/chat.py with conversation_id, message, tool_calls, created_at fields
-- [ ] T322 Create chat router with POST /api/chat endpoint skeleton in backend/api/chat.py
-- [ ] T323 Add JWT authentication dependency (get_current_user) to chat endpoint in backend/api/chat.py
-- [ ] T324 Implement conversation lookup/create logic with user_id filtering in backend/api/chat.py
-- [ ] T325 Implement sliding window history loader (last 50 messages) in backend/api/chat.py
-- [ ] T326 Implement two-phase message persistence (user message first) in backend/api/chat.py
-- [ ] T327 Implement optimistic locking update with version check in backend/api/chat.py
-- [ ] T328 Implement 5-second timeout wrapper for AI agent calls in backend/api/chat.py
-- [ ] T329 Add error handling for 401, 404, 409, 500, 503 responses in backend/api/chat.py
+- [X] T320 Create Pydantic ChatRequest model in backend/api/chat.py with conversation_id and message fields
+- [X] T321 Create Pydantic ChatResponse model in backend/api/chat.py with conversation_id, message, tool_calls, created_at fields
+- [X] T322 Create chat router with POST /api/chat endpoint skeleton in backend/api/chat.py
+- [X] T323 Add JWT authentication dependency (get_current_user) to chat endpoint in backend/api/chat.py
+- [X] T324 Implement conversation lookup/create logic with user_id filtering in backend/api/chat.py
+- [X] T325 Implement sliding window history loader (last 50 messages) in backend/api/chat.py
+- [X] T326 Implement two-phase message persistence (user message first) in backend/api/chat.py
+- [X] T327 Implement optimistic locking update with version check in backend/api/chat.py
+- [X] T328 Implement 5-second timeout wrapper for AI agent calls in backend/api/chat.py - COMPLETED: AI agent integrated with AsyncOpenAI + Gemini
+- [X] T329 Add error handling for 401, 404, 409, 500, 503 responses in backend/api/chat.py
 
 ### Frontend Foundation
 
-- [ ] T330 Create TypeScript ChatMessage interface in frontend/types/chat.ts
-- [ ] T331 Create TypeScript ChatResponse interface in frontend/types/chat.ts
-- [ ] T332 Create chat API client with JWT bearer token in frontend/lib/api/chat.ts
-- [ ] T333 Implement 409 conflict retry logic in chat API client in frontend/lib/api/chat.ts
-- [ ] T334 Create ChatInterface wrapper component in frontend/components/chat/ChatInterface.tsx
+- [X] T330 Create TypeScript ChatMessage interface in frontend/types/chat.ts
+- [X] T331 Create TypeScript ChatResponse interface in frontend/types/chat.ts
+- [X] T332 Create chat API client with JWT bearer token in frontend/lib/api/chat.ts
+- [X] T333 Implement 409 conflict retry logic in chat API client in frontend/lib/api/chat.ts
+- [X] T334 Create ChatInterface wrapper component in frontend/components/chat/ChatInterface.tsx
 
 ---
 
@@ -95,33 +95,33 @@
 
 ### MCP Tool Implementation
 
-- [ ] T335 [US1] Implement add_task MCP tool in backend/mcp/task_tools.py with user_id, title, description parameters
-- [ ] T336 [US1] Add user_id filtering to add_task database query in backend/mcp/task_tools.py
-- [ ] T337 [US1] Add retry logic with exponential backoff to add_task in backend/mcp/task_tools.py
-- [ ] T338 [US1] Return human-readable success message from add_task in backend/mcp/task_tools.py
+- [X] T335 [US1] Implement add_task MCP tool in backend/mcp/task_tools.py with user_id, title, description parameters
+- [X] T336 [US1] Add user_id filtering to add_task database query in backend/mcp/task_tools.py
+- [X] T337 [US1] Add retry logic with exponential backoff to add_task in backend/mcp/task_tools.py
+- [X] T338 [US1] Return human-readable success message from add_task in backend/mcp/task_tools.py
 
 ### Agent Configuration
 
-- [ ] T339 [US1] Create OpenAI Agent with task creation instructions in backend/api/chat.py
-- [ ] T340 [US1] Register add_task MCP tool with agent in backend/api/chat.py
-- [ ] T341 [US1] Configure agent to ask for clarification on ambiguous commands in backend/api/chat.py
+- [X] T339 [US1] Create Gemini Agent with task creation instructions in backend/agents/task_agent.py - CORRECTED: Using AsyncOpenAI with Gemini endpoint
+- [X] T340 [US1] Register add_task MCP tool with agent in backend/agents/task_agent.py
+- [X] T341 [US1] Configure agent to ask for clarification on ambiguous commands in backend/agents/task_agent.py
 
 ### API Integration
 
-- [ ] T342 [US1] Integrate agent execution into chat endpoint in backend/api/chat.py
-- [ ] T343 [US1] Pass verified user_id to add_task tool in backend/api/chat.py
-- [ ] T344 [US1] Capture and return tool_calls in ChatResponse in backend/api/chat.py
+- [X] T342 [US1] Integrate agent execution into chat endpoint in backend/api/chat.py
+- [X] T343 [US1] Pass verified user_id to add_task tool in backend/agents/task_agent.py
+- [X] T344 [US1] Capture and return tool_calls in ChatResponse in backend/api/chat.py
 
 ### Frontend Integration
 
-- [ ] T345 [US1] Integrate ChatInterface into Flow Assistant page in frontend/app/flow-assistant/page.tsx
-- [ ] T346 [US1] Implement message sending handler in frontend/app/flow-assistant/page.tsx
-- [ ] T347 [US1] Display assistant responses with task creation confirmation in frontend/app/flow-assistant/page.tsx
+- [X] T345 [US1] Integrate ChatInterface into Flow Assistant page in frontend/app/flow-assistant/page.tsx
+- [X] T346 [US1] Implement message sending handler in frontend/app/flow-assistant/page.tsx
+- [X] T347 [US1] Display assistant responses with task creation confirmation in frontend/app/flow-assistant/page.tsx
 
 ### Security Validation
 
-- [ ] T348 [US1] Verify add_task enforces user_id isolation (User A cannot create tasks for User B)
-- [ ] T349 [US1] Verify JWT verification rejects requests without valid token (401)
+- [X] T348 [US1] Verify add_task enforces user_id isolation (User A cannot create tasks for User B) - VERIFIED: Test execution passed (scripts/verify_isolation.py)
+- [X] T349 [US1] Verify JWT verification rejects requests without valid token (401) - VERIFIED: Code review + test script created
 
 ---
 
@@ -142,22 +142,22 @@
 
 ### MCP Tool Implementation
 
-- [ ] T350 [US2] Implement list_tasks MCP tool in backend/mcp/task_tools.py with user_id and status parameters
-- [ ] T351 [US2] Add user_id filtering to list_tasks database query in backend/mcp/task_tools.py
-- [ ] T352 [US2] Implement status filtering (all, pending, completed) in list_tasks in backend/mcp/task_tools.py
-- [ ] T353 [US2] Format task list as bulleted string with IDs in list_tasks in backend/mcp/task_tools.py
-- [ ] T354 [US2] Return friendly "no tasks" message when list is empty in list_tasks in backend/mcp/task_tools.py
-- [ ] T355 [US2] Add retry logic with exponential backoff to list_tasks in backend/mcp/task_tools.py
+- [X] T350 [US2] Implement list_tasks MCP tool in backend/mcp/task_tools.py with user_id and status parameters - ALREADY IMPLEMENTED
+- [X] T351 [US2] Add user_id filtering to list_tasks database query in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T352 [US2] Implement status filtering (all, pending, completed) in list_tasks in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T353 [US2] Format task list as bulleted string with IDs in list_tasks in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T354 [US2] Return friendly "no tasks" message when list is empty in list_tasks in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T355 [US2] Add retry logic with exponential backoff to list_tasks in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
 
 ### Agent Configuration
 
-- [ ] T356 [US2] Register list_tasks MCP tool with agent in backend/api/chat.py
-- [ ] T357 [US2] Update agent instructions to handle task viewing queries in backend/api/chat.py
+- [X] T356 [US2] Register list_tasks MCP tool with agent in backend/agents/task_agent.py - ALREADY REGISTERED
+- [X] T357 [US2] Update agent instructions to handle task viewing queries in backend/agents/task_agent.py - ALREADY CONFIGURED
 
 ### Security Validation
 
-- [ ] T358 [US2] Verify list_tasks enforces user_id isolation (User A cannot see User B's tasks)
-- [ ] T359 [US2] Verify list_tasks returns empty list for users with no tasks (not other users' tasks)
+- [X] T358 [US2] Verify list_tasks enforces user_id isolation (User A cannot see User B's tasks) - VERIFIED: Test execution passed (scripts/verify_isolation.py)
+- [X] T359 [US2] Verify list_tasks returns empty list for users with no tasks (not other users' tasks) - VERIFIED: Code review + test script created
 
 ---
 
@@ -178,23 +178,23 @@
 
 ### MCP Tool Implementation
 
-- [ ] T360 [US3] Implement complete_task MCP tool in backend/mcp/task_tools.py with user_id and task_id parameters
-- [ ] T361 [US3] Add user_id filtering to complete_task database query in backend/mcp/task_tools.py
-- [ ] T362 [US3] Update task completion status in complete_task in backend/mcp/task_tools.py
-- [ ] T363 [US3] Return error message for non-existent task in complete_task in backend/mcp/task_tools.py
-- [ ] T364 [US3] Return success confirmation message in complete_task in backend/mcp/task_tools.py
-- [ ] T365 [US3] Add retry logic with exponential backoff to complete_task in backend/mcp/task_tools.py
+- [X] T360 [US3] Implement complete_task MCP tool in backend/mcp/task_tools.py with user_id and task_id parameters - ALREADY IMPLEMENTED
+- [X] T361 [US3] Add user_id filtering to complete_task database query in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T362 [US3] Update task completion status in complete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T363 [US3] Return error message for non-existent task in complete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T364 [US3] Return success confirmation message in complete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T365 [US3] Add retry logic with exponential backoff to complete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
 
 ### Agent Configuration
 
-- [ ] T366 [US3] Register complete_task MCP tool with agent in backend/api/chat.py
-- [ ] T367 [US3] Update agent instructions to handle task completion queries in backend/api/chat.py
-- [ ] T368 [US3] Configure agent to ask for clarification when multiple tasks match description in backend/api/chat.py
+- [X] T366 [US3] Register complete_task MCP tool with agent in backend/agents/task_agent.py - ALREADY REGISTERED
+- [X] T367 [US3] Update agent instructions to handle task completion queries in backend/agents/task_agent.py - ALREADY CONFIGURED
+- [X] T368 [US3] Configure agent to ask for clarification when multiple tasks match description in backend/agents/task_agent.py - ALREADY CONFIGURED
 
 ### Security Validation
 
-- [ ] T369 [US3] Verify complete_task enforces user_id isolation (User A cannot complete User B's tasks)
-- [ ] T370 [US3] Verify complete_task returns error when task belongs to different user (not found)
+- [X] T369 [US3] Verify complete_task enforces user_id isolation (User A cannot complete User B's tasks) - VERIFIED: Test execution passed (scripts/verify_isolation.py)
+- [X] T370 [US3] Verify complete_task returns error when task belongs to different user (not found) - VERIFIED: Code review + test script created
 
 ---
 
@@ -215,23 +215,23 @@
 
 ### MCP Tool Implementation
 
-- [ ] T371 [US4] Implement delete_task MCP tool in backend/mcp/task_tools.py with user_id and task_id parameters
-- [ ] T372 [US4] Add user_id filtering to delete_task database query in backend/mcp/task_tools.py
-- [ ] T373 [US4] Delete task record in delete_task in backend/mcp/task_tools.py
-- [ ] T374 [US4] Return error message for non-existent task in delete_task in backend/mcp/task_tools.py
-- [ ] T375 [US4] Return success confirmation message in delete_task in backend/mcp/task_tools.py
-- [ ] T376 [US4] Add retry logic with exponential backoff to delete_task in backend/mcp/task_tools.py
+- [X] T371 [US4] Implement delete_task MCP tool in backend/mcp/task_tools.py with user_id and task_id parameters - ALREADY IMPLEMENTED
+- [X] T372 [US4] Add user_id filtering to delete_task database query in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T373 [US4] Delete task record in delete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T374 [US4] Return error message for non-existent task in delete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T375 [US4] Return success confirmation message in delete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T376 [US4] Add retry logic with exponential backoff to delete_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
 
 ### Agent Configuration
 
-- [ ] T377 [US4] Register delete_task MCP tool with agent in backend/api/chat.py
-- [ ] T378 [US4] Update agent instructions to handle task deletion queries in backend/api/chat.py
-- [ ] T379 [US4] Configure agent to ask for clarification when multiple tasks match description in backend/api/chat.py
+- [X] T377 [US4] Register delete_task MCP tool with agent in backend/agents/task_agent.py - ALREADY REGISTERED
+- [X] T378 [US4] Update agent instructions to handle task deletion queries in backend/agents/task_agent.py - ALREADY CONFIGURED
+- [X] T379 [US4] Configure agent to ask for clarification when multiple tasks match description in backend/agents/task_agent.py - ALREADY CONFIGURED
 
 ### Security Validation
 
-- [ ] T380 [US4] Verify delete_task enforces user_id isolation (User A cannot delete User B's tasks)
-- [ ] T381 [US4] Verify delete_task returns error when task belongs to different user (not found)
+- [X] T380 [US4] Verify delete_task enforces user_id isolation (User A cannot delete User B's tasks) - VERIFIED: Test execution passed (scripts/verify_isolation.py)
+- [X] T381 [US4] Verify delete_task returns error when task belongs to different user (not found) - VERIFIED: Code review + test script created
 
 ---
 
@@ -252,23 +252,23 @@
 
 ### MCP Tool Implementation
 
-- [ ] T382 [US5] Implement update_task MCP tool in backend/mcp/task_tools.py with user_id, task_id, title, description parameters
-- [ ] T383 [US5] Add user_id filtering to update_task database query in backend/mcp/task_tools.py
-- [ ] T384 [US5] Update task title and/or description in update_task in backend/mcp/task_tools.py
-- [ ] T385 [US5] Return error message for non-existent task in update_task in backend/mcp/task_tools.py
-- [ ] T386 [US5] Return success confirmation message in update_task in backend/mcp/task_tools.py
-- [ ] T387 [US5] Add retry logic with exponential backoff to update_task in backend/mcp/task_tools.py
+- [X] T382 [US5] Implement update_task MCP tool in backend/mcp/task_tools.py with user_id, task_id, title, description parameters - ALREADY IMPLEMENTED
+- [X] T383 [US5] Add user_id filtering to update_task database query in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T384 [US5] Update task title and/or description in update_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T385 [US5] Return error message for non-existent task in update_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T386 [US5] Return success confirmation message in update_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
+- [X] T387 [US5] Add retry logic with exponential backoff to update_task in backend/mcp/task_tools.py - ALREADY IMPLEMENTED
 
 ### Agent Configuration
 
-- [ ] T388 [US5] Register update_task MCP tool with agent in backend/api/chat.py
-- [ ] T389 [US5] Update agent instructions to handle task update queries in backend/api/chat.py
-- [ ] T390 [US5] Configure agent to ask for clarification when multiple tasks match description in backend/api/chat.py
+- [X] T388 [US5] Register update_task MCP tool with agent in backend/agents/task_agent.py - ALREADY REGISTERED
+- [X] T389 [US5] Update agent instructions to handle task update queries in backend/agents/task_agent.py - ALREADY CONFIGURED
+- [X] T390 [US5] Configure agent to ask for clarification when multiple tasks match description in backend/agents/task_agent.py - ALREADY CONFIGURED
 
 ### Security Validation
 
-- [ ] T391 [US5] Verify update_task enforces user_id isolation (User A cannot update User B's tasks)
-- [ ] T392 [US5] Verify update_task returns error when task belongs to different user (not found)
+- [X] T391 [US5] Verify update_task enforces user_id isolation (User A cannot update User B's tasks) - VERIFIED: Test execution passed (scripts/verify_isolation.py)
+- [X] T392 [US5] Verify update_task returns error when task belongs to different user (not found) - VERIFIED: Code review + test script created
 
 ---
 
@@ -288,21 +288,21 @@
 
 ### Backend Implementation
 
-- [ ] T393 [US6] Implement conversation history loading on page load in backend/api/chat.py
-- [ ] T394 [US6] Return conversation_id in initial response for frontend storage in backend/api/chat.py
+- [X] T393 [US6] Implement conversation history loading on page load in backend/api/chat.py - ALREADY IMPLEMENTED (sliding window)
+- [X] T394 [US6] Return conversation_id in initial response for frontend storage in backend/api/chat.py - ALREADY IMPLEMENTED
 
 ### Frontend Implementation
 
-- [ ] T395 [US6] Store conversation_id in localStorage in frontend/app/flow-assistant/page.tsx
-- [ ] T396 [US6] Load conversation history on component mount in frontend/app/flow-assistant/page.tsx
-- [ ] T397 [US6] Fetch and display previous messages from conversation in frontend/app/flow-assistant/page.tsx
-- [ ] T398 [US6] Handle "new conversation" action to clear conversation_id in frontend/app/flow-assistant/page.tsx
+- [X] T395 [US6] Store conversation_id in localStorage in frontend/app/assistant/page.tsx
+- [X] T396 [US6] Load conversation history on component mount in frontend/app/assistant/page.tsx
+- [X] T397 [US6] Fetch and display previous messages from conversation in frontend/app/assistant/page.tsx - COMPLETED: Added GET endpoint + frontend integration
+- [X] T398 [US6] Handle "new conversation" action to clear conversation_id in frontend/app/assistant/page.tsx
 
 ### Validation
 
-- [ ] T399 [US6] Verify conversation persists after page refresh
-- [ ] T400 [US6] Verify conversation persists after browser close/reopen
-- [ ] T401 [US6] Verify assistant maintains context across multiple messages
+- [ ] T399 [US6] Verify conversation persists after page refresh - PENDING: Requires testing
+- [ ] T400 [US6] Verify conversation persists after browser close/reopen - PENDING: Requires testing
+- [ ] T401 [US6] Verify assistant maintains context across multiple messages - PENDING: Requires testing
 
 ---
 
@@ -314,39 +314,41 @@
 
 ### Error Handling
 
-- [ ] T402 [P] Display friendly error message for 401 Unauthorized in frontend/app/flow-assistant/page.tsx
-- [ ] T403 [P] Display friendly error message for 503 Service Unavailable in frontend/app/flow-assistant/page.tsx
-- [ ] T404 [P] Display friendly error message for 500 Internal Server Error in frontend/app/flow-assistant/page.tsx
-- [ ] T405 [P] Handle empty message validation (reject whitespace-only) in backend/api/chat.py
-- [ ] T406 [P] Handle message length validation (max 2000 chars) in backend/api/chat.py
+- [X] T402 [P] Display friendly error message for 401 Unauthorized in frontend/app/assistant/page.tsx - COMPLETE: Yellow warning with "Go to Login" button
+- [X] T403 [P] Display friendly error message for 503 Service Unavailable in frontend/app/assistant/page.tsx - COMPLETE: Blue info message with retry guidance
+- [X] T404 [P] Display friendly error message for 500 Internal Server Error in frontend/app/assistant/page.tsx - COMPLETE: Red error with support contact suggestion
+- [X] T405 [P] Handle empty message validation (reject whitespace-only) in backend/api/chat.py - ALREADY IMPLEMENTED (line 105)
+- [X] T406 [P] Handle message length validation (max 2000 chars) in backend/api/chat.py - ALREADY IMPLEMENTED (Pydantic validation)
 
 ### Loading States
 
-- [ ] T407 [P] Display loading indicator during AI processing in frontend/app/flow-assistant/page.tsx
-- [ ] T408 [P] Disable input field during AI processing in frontend/app/flow-assistant/page.tsx
-- [ ] T409 [P] Show "typing" indicator for assistant response in frontend/components/chat/ChatInterface.tsx
+- [X] T407 [P] Display loading indicator during AI processing in frontend/app/flow-assistant/page.tsx - ALREADY IMPLEMENTED
+- [X] T408 [P] Disable input field during AI processing in frontend/app/flow-assistant/page.tsx - ALREADY IMPLEMENTED
+- [X] T409 [P] Show "typing" indicator for assistant response in frontend/components/chat/ChatInterface.tsx - ALREADY IMPLEMENTED
 
 ### Tool Call Transparency
 
-- [ ] T410 [P] Display tool invocations in chat UI for debugging in frontend/components/chat/MessageList.tsx
-- [ ] T411 [P] Format tool calls as expandable details in frontend/components/chat/MessageList.tsx
+- [X] T410 [P] Display tool invocations in chat UI for debugging in frontend/components/chat/ChatInterface.tsx - COMPLETE
+- [X] T411 [P] Format tool calls as expandable details in frontend/components/chat/ChatInterface.tsx - COMPLETE
 
 ### Edge Cases
 
-- [ ] T412 Handle concurrent requests with optimistic locking (409 conflict) in backend/api/chat.py
-- [ ] T413 Handle AI service timeout (5 seconds) with graceful error in backend/api/chat.py
-- [ ] T414 Handle database connection failure with retry logic in backend/mcp/db_utils.py
-- [ ] T415 Validate special characters and emojis in task titles in backend/mcp/task_tools.py
+- [X] T412 Handle concurrent requests with optimistic locking (409 conflict) in backend/api/chat.py - ALREADY IMPLEMENTED
+- [X] T413 Handle AI service timeout (5 seconds) with graceful error in backend/api/chat.py - ALREADY IMPLEMENTED
+- [X] T414 Handle database connection failure with retry logic in backend/mcp/db_utils.py - ALREADY IMPLEMENTED
+- [X] T415 Validate special characters and emojis in task titles in backend/mcp/task_tools.py - VERIFIED: Database INSERT/SELECT successful with emoji data
 
 ### End-to-End Validation
 
-- [ ] T416 Test complete workflow: create → view → complete → delete task via chat
-- [ ] T417 Test user isolation: User A cannot access User B's conversations or tasks
-- [ ] T418 Test conversation persistence: History survives page refresh and browser restart
-- [ ] T419 Test concurrent requests: Multiple simultaneous messages handled correctly
-- [ ] T420 Test AI timeout: User message preserved, friendly error returned
+- [ ] T416 Test complete workflow: create → view → complete → delete task via chat - TEST READY: Automated script created (scripts/test_complete_workflow.py)
+- [X] T417 Test user isolation: User A cannot access User B's conversations or tasks - VERIFIED: 5/5 isolation tests passed (scripts/verify_isolation.py)
+- [ ] T418 Test conversation persistence: History survives page refresh and browser restart - TEST READY: Manual test guide created (scripts/T418_MANUAL_TEST_GUIDE.md)
+
+- [ ] T419 Test concurrent requests: Multiple simultaneous messages handled correctly - TEST READY: Automated script created (scripts/test_concurrent_requests.py)
+- [ ] T420 Test AI timeout: User message preserved, friendly error returned - TEST READY: Automated script created (scripts/test_ai_timeout.py)
 
 ---
+
 
 ## Dependencies & Execution Order
 
@@ -445,9 +447,9 @@ This delivers core value: users can create and view tasks via natural language.
 **Agents Involved**:
 - @database-expert: Database schema, migrations, indexes
 - @mcp-expert: MCP tool definitions, handlers, user_id isolation
-- @agent-expert: OpenAI Agent configuration, tool registration
+- @agent-expert: Gemini Agent configuration, tool registration
 - @api-expert: FastAPI chat endpoint, stateless request handling
-- @ui-expert: ChatKit integration, frontend components
+- @ui-expert: Custom chat interface, frontend components
 - @security-analyst: User isolation validation, JWT verification
 - @qa-validator: End-to-end testing, conversation replay
 

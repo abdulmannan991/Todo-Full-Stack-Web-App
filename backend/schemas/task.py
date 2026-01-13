@@ -15,7 +15,7 @@ SECURITY NOTE:
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from datetime import datetime
 from typing import Optional
-from models.task import TaskStatus
+from backend.models.task import TaskStatus
 
 
 class TaskCreateRequest(BaseModel):

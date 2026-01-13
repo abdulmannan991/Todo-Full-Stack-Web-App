@@ -15,10 +15,10 @@ NO client-supplied user_id values are ever trusted.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import List
-from database import get_session
-from auth import get_current_user
-from models import Task, TaskStatus
-from schemas.task import TaskCreateRequest, TaskUpdateRequest, TaskResponse
+from backend.database import get_session
+from backend.auth import get_current_user
+from backend.models import Task, TaskStatus
+from backend.schemas.task import TaskCreateRequest, TaskUpdateRequest, TaskResponse
 from datetime import datetime
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
