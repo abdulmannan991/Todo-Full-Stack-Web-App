@@ -12,10 +12,11 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 from typing import Dict
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from backend/.env
+load_dotenv(Path(__file__).parent / ".env")
 
 # Security scheme setup
 security = HTTPBearer()

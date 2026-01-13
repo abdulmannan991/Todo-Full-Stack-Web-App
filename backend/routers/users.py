@@ -14,9 +14,9 @@ from datetime import datetime
 from pathlib import Path
 import os
 import uuid
-from auth import get_current_user
-from database import get_session
-from models import User, Task, TaskStatus
+from backend.auth import get_current_user
+from backend.database import get_session
+from backend.models import User, Task, TaskStatus
 
 router = APIRouter(
     prefix="/users",

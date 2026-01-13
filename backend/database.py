@@ -66,26 +66,15 @@ def init_db():
 
     Creates tables if they don't exist (idempotent, safe for production).
     Imports all models to ensure they're registered with SQLModel metadata.
-
-    HARD RESET MODE (Sprint 2 Schema Sync):
-    - Temporarily drops ALL tables before recreating
-    - Ensures User.id primary key and Task table are properly created
-    - CRITICAL: This will delete all existing data!
-    - Remove drop_all() after first successful initialization
     """
     # Import models to register them with SQLModel metadata
-    from models import User, Task  # noqa: F401
+    from backend.models import User, Task  # noqa: F401
+    from backend.models.conversation import Conversation  # noqa: F401
+    from backend.models.message import Message  # noqa: F401
 
     print("Initializing database tables...")
 
-    # HARD RESET: Drop all tables to fix schema mismatch
-    # WARNING: This deletes all data! Remove this line after first run.
-    print("[HARD RESET] Dropping all existing tables...")
+    # Create all tables if they don't exist (idempotent operation)
     SQLModel.metadata.create_all(engine)
-    print("[HARD RESET] All tables dropped successfully")
-
-    # Create all tables with new Sprint 2 schema
-    SQLModel.metadata.create_all(engine)
-    print("[OK] Database tables initialized successfully with Sprint 2 schema")
-    print("[OK] - User table with 'id' primary key")
-    print("[OK] - Task table with foreign key to User.id")
+    print("[OK] Database tables initialized successfully")
+    print("[OK] - User, Task, Conversation, Message tables ready")
