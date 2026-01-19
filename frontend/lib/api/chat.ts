@@ -14,7 +14,7 @@
 
 import { ChatRequest, ChatResponse, ChatMessage } from '@/types/chat';
 import { API_BASE_URL } from '@/lib/config';
-
+const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL
 /**
  * Get authentication token from Better Auth
  *
@@ -56,7 +56,7 @@ export async function sendChatMessage(
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    const response = await fetch(`${CHAT_API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

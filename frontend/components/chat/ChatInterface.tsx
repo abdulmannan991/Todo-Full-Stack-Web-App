@@ -41,6 +41,7 @@ function formatToolCall(toolCall: ToolCall): string {
   return toolNames[toolCall.tool] || `🔧 ${toolCall.tool}`;
 }
 
+
 export function ChatInterface({
   messages,
   onSendMessage,
