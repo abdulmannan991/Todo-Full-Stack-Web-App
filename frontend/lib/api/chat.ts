@@ -123,13 +123,14 @@ export async function loadConversationHistory(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/conversations/${conversationId}/messages?limit=${limit}`, {
+    // CHANGE THIS LINE: Use CHAT_API_URL instead of API_BASE_URL
+    const response = await fetch(`${CHAT_API_URL}/api/conversations/${conversationId}/messages?limit=${limit}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-
+    
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error('Conversation not found.');
