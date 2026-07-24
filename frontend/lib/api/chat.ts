@@ -14,7 +14,7 @@
 
 import { ChatRequest, ChatResponse, ChatMessage } from '@/types/chat';
 import { API_BASE_URL } from '@/lib/config';
-const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL
+const CHAT_API_URL = process.env.NEXT_PUBLIC_CHAT_API_URL || API_BASE_URL
 /**
  * Get authentication token from Better Auth
  *
@@ -130,7 +130,7 @@ export async function loadConversationHistory(
         'Authorization': `Bearer ${token}`
       }
     });
-    
+
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error('Conversation not found.');

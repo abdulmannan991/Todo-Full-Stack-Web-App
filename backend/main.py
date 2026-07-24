@@ -64,11 +64,22 @@ app = FastAPI(
     version="0.2.0",  # Sprint 2
 )
 
-# Configure CORS middleware - HARDCODED FOR DEBUGGING
-# CRITICAL: This MUST be immediately after app creation
+# Configure CORS middleware
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://todo-full-stack-web-app-a2xu.vercel.app",
+]
+for origin in default_origins:
+    if origin not in allowed_origins:
+        allowed_origins.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
