@@ -14,8 +14,17 @@ Configured with:
 CRITICAL: Models are registered via database.init_db() which imports them.
 """
 
+import os
 import sys
+import gc
+import types
 from pathlib import Path
+from dotenv import load_dotenv
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
 
 # Fix module imports when running at root directory on platforms like Hugging Face Spaces
 current_dir = Path(__file__).parent.resolve()
@@ -26,7 +35,6 @@ if str(current_dir) not in sys.path:
 try:
     import backend
 except ModuleNotFoundError:
-    import types
     backend_pkg = types.ModuleType("backend")
     backend_pkg.__path__ = [str(current_dir)]
     sys.modules["backend"] = backend_pkg
@@ -35,12 +43,11 @@ from backend.routers import users, auth, tasks
 from backend.api import chat
 from backend.database import init_db, engine
 from sqlalchemy.pool import NullPool
-import gc
 
-# Load environment variables from backend/.env
-# Replace current load_dotenv with this:
+# Load environment variables from .env
 env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
+load_dotenv()
 
 
 class SessionCleanupMiddleware(BaseHTTPMiddleware):
