@@ -14,13 +14,23 @@ Configured with:
 CRITICAL: Models are registered via database.init_db() which imports them.
 """
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
-import os
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
+
+# Fix module imports when running at root directory on platforms like Hugging Face Spaces
+current_dir = Path(__file__).parent.resolve()
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
+
+# Create 'backend' package alias if running directly inside backend folder / HF Space root
+try:
+    import backend
+except ModuleNotFoundError:
+    import types
+    backend_pkg = types.ModuleType("backend")
+    backend_pkg.__path__ = [str(current_dir)]
+    sys.modules["backend"] = backend_pkg
+
 from backend.routers import users, auth, tasks
 from backend.api import chat
 from backend.database import init_db, engine
@@ -110,10 +120,10 @@ app.include_router(chat.router)  # Phase 3: AI Chat endpoint
 
 # Mount static files directory for avatar uploads (T120)
 # Create uploads directory if it doesn't exist
-uploads_dir = Path("backend/uploads")
+uploads_dir = Path("backend/uploads") if Path("backend/uploads").exists() or Path("backend").exists() else Path("uploads")
 uploads_dir.mkdir(parents=True, exist_ok=True)
 
-app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 
 @app.get("/health")
