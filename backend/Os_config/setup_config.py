@@ -86,16 +86,23 @@ class GeminiConfig:
         )
 
 
-# Global configuration instance
-# This is the ONLY configuration that should be used throughout the application
-google_gemini_config = GeminiConfig()
+# Lazy singleton — only created on first call to get_gemini_config()
+_google_gemini_config: "Optional[GeminiConfig]" = None
 
 
-def get_gemini_config() -> GeminiConfig:
+def get_gemini_config() -> "GeminiConfig":
     """
-    Get the global Gemini configuration instance.
+    Get the global Gemini configuration instance (lazy-loaded).
 
     Returns:
         GeminiConfig: The global configuration instance
     """
-    return google_gemini_config
+    global _google_gemini_config
+    if _google_gemini_config is None:
+        _google_gemini_config = GeminiConfig()
+    return _google_gemini_config
+
+
+# Keep backward-compatible alias
+def _get_google_gemini_config() -> "GeminiConfig":
+    return get_gemini_config()
