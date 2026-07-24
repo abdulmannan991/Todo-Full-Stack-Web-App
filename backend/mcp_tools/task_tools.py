@@ -1,10 +1,10 @@
 """
-MCP Task Tools - FastMCP tool definitions for task management
+MCP Task Tools - Task management tool functions
 
 Owner: @mcp-expert
 Task: T317
 
-Provides MCP tools for:
+Provides task management functions for:
 - Creating tasks (add_task)
 - Listing tasks (list_tasks)
 - Completing tasks (complete_task)
@@ -12,7 +12,7 @@ Provides MCP tools for:
 - Updating tasks (update_task)
 
 CRITICAL ARCHITECTURE RULES:
-1. MCP tools are the ONLY layer allowed to mutate task data
+1. These tools are the ONLY layer allowed to mutate task data
 2. All tools MUST enforce user_id isolation
 3. All tools MUST use retry logic for transient failures
 4. All tools return human-readable strings for agent responses
@@ -20,11 +20,6 @@ CRITICAL ARCHITECTURE RULES:
 
 Per Constitution Principle III: All database operations MUST be scoped to authenticated user.
 """
-
-try:
-    from fastmcp import FastMCP
-except Exception:
-    from fastmcp.server.server import FastMCP
 
 from sqlmodel import Session, select
 from typing import Optional
@@ -36,11 +31,6 @@ except ModuleNotFoundError:
     from models.task import Task
     from mcp_tools.db_utils import get_mcp_session, with_db_retry
 
-# Initialize FastMCP instance
-mcp = FastMCP("TaskOperations")
-
-
-@mcp.tool()
 def add_task(user_id: int, title: str, description: Optional[str] = None) -> str:
     """
     Add a new task for the user.
@@ -71,7 +61,6 @@ def add_task(user_id: int, title: str, description: Optional[str] = None) -> str
         return f"Successfully created task: {task.title}"
 
 
-@mcp.tool()
 def list_tasks(user_id: int, status: str = "all") -> str:
     """
     List tasks for the user.
@@ -109,7 +98,6 @@ def list_tasks(user_id: int, status: str = "all") -> str:
         return f"Found {len(tasks)} task(s):\n" + "\n".join(task_lines)
 
 
-@mcp.tool()
 def complete_task(user_id: int, task_id: int) -> str:
     """
     Mark a task as completed for the user.
@@ -141,7 +129,6 @@ def complete_task(user_id: int, task_id: int) -> str:
         return f"Successfully marked task '{task.title}' as completed."
 
 
-@mcp.tool()
 def delete_task(user_id: int, task_id: int) -> str:
     """
     Delete a task for the user.
@@ -173,7 +160,6 @@ def delete_task(user_id: int, task_id: int) -> str:
         return f"Successfully deleted task '{title}'."
 
 
-@mcp.tool()
 def update_task(
     user_id: int,
     task_id: int,
