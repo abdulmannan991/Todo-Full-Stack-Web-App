@@ -26,28 +26,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
-# Fix module imports when running at root directory on platforms like Hugging Face Spaces
+# Add parent directory to sys.path so 'from backend...' imports work cleanly
 current_dir = Path(__file__).parent.resolve()
-if str(current_dir) not in sys.path:
-    sys.path.insert(0, str(current_dir))
+parent_dir = current_dir.parent.resolve()
 
-# Create 'backend' package alias if running directly inside backend folder / HF Space root
-try:
-    import backend
-except ModuleNotFoundError:
-    backend_pkg = types.ModuleType("backend")
-    backend_pkg.__path__ = [str(current_dir)]
-    sys.modules["backend"] = backend_pkg
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
+
+# Load environment variables FIRST before importing backend modules
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+load_dotenv()
 
 from backend.routers import users, auth, tasks
 from backend.api import chat
 from backend.database import init_db, engine
 from sqlalchemy.pool import NullPool
-
-# Load environment variables from .env
-env_path = Path(__file__).parent / ".env"
-load_dotenv(dotenv_path=env_path, override=True)
-load_dotenv()
 
 
 class SessionCleanupMiddleware(BaseHTTPMiddleware):

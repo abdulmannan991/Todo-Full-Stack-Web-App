@@ -21,7 +21,7 @@ CRITICAL ARCHITECTURE RULES:
 Per Constitution Principle III: All database operations MUST be scoped to authenticated user.
 """
 
-from fastmcp import FastMCP
+from fastmcp.server.server import FastMCP
 from sqlmodel import Session, select
 from typing import Optional
 from backend.models.task import Task
