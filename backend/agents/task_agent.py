@@ -24,7 +24,10 @@ try:
     from backend.Os_config.setup_config import get_gemini_config
 except ModuleNotFoundError:
     from Os_config.setup_config import get_gemini_config
-from backend.mcp.task_tools import add_task, list_tasks, complete_task, delete_task, update_task
+try:
+    from backend.mcp_tools.task_tools import add_task, list_tasks, complete_task, delete_task, update_task
+except ModuleNotFoundError:
+    from mcp_tools.task_tools import add_task, list_tasks, complete_task, delete_task, update_task
 
 
 class TaskAgent:
