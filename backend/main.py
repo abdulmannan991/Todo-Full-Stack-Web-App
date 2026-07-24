@@ -32,6 +32,16 @@ parent_dir = current_dir.parent.resolve()
 
 if str(parent_dir) not in sys.path:
     sys.path.insert(0, str(parent_dir))
+if str(current_dir) not in sys.path:
+    sys.path.append(str(current_dir))
+
+# Create 'backend' package alias if running directly inside backend folder / HF Space root
+try:
+    import backend
+except ModuleNotFoundError:
+    backend_pkg = types.ModuleType("backend")
+    backend_pkg.__path__ = [str(current_dir)]
+    sys.modules["backend"] = backend_pkg
 
 # Load environment variables FIRST before importing backend modules
 env_path = Path(__file__).parent / ".env"
