@@ -48,10 +48,17 @@ env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
 load_dotenv()
 
-from backend.routers import users, auth, tasks
-from backend.api import chat
-from backend.database import init_db, engine
+try:
+    from backend.routers import users, auth, tasks
+    from backend.api import chat
+    from backend.database import init_db, engine
+except ModuleNotFoundError:
+    from routers import users, auth, tasks
+    from api import chat
+    from database import init_db, engine
+
 from sqlalchemy.pool import NullPool
+
 
 
 class SessionCleanupMiddleware(BaseHTTPMiddleware):

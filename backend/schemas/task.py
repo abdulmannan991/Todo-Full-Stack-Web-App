@@ -15,7 +15,11 @@ SECURITY NOTE:
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from datetime import datetime
 from typing import Optional
-from backend.models.task import TaskStatus
+try:
+    from backend.models.task import TaskStatus
+except ModuleNotFoundError:
+    from models.task import TaskStatus
+
 
 
 class TaskCreateRequest(BaseModel):

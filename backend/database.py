@@ -67,10 +67,15 @@ def init_db():
     Creates tables if they don't exist (idempotent, safe for production).
     Imports all models to ensure they're registered with SQLModel metadata.
     """
-    # Import models to register them with SQLModel metadata
-    from backend.models import User, Task  # noqa: F401
-    from backend.models.conversation import Conversation  # noqa: F401
-    from backend.models.message import Message  # noqa: F401
+    try:
+        from backend.models import User, Task  # noqa: F401
+        from backend.models.conversation import Conversation  # noqa: F401
+        from backend.models.message import Message  # noqa: F401
+    except ModuleNotFoundError:
+        from models import User, Task  # noqa: F401
+        from models.conversation import Conversation  # noqa: F401
+        from models.message import Message  # noqa: F401
+
 
     print("Initializing database tables...")
 

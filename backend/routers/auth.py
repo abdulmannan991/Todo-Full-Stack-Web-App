@@ -12,8 +12,13 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 import os
-from backend.database import engine, get_session
-from backend.models import User
+try:
+    from backend.database import engine, get_session
+    from backend.models import User
+except ModuleNotFoundError:
+    from database import engine, get_session
+    from models import User
+
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 

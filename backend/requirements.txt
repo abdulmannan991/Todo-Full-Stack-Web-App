@@ -12,5 +12,3 @@ openai>=1.0.0  # AsyncOpenAI client for Gemini endpoint
 openai-agents>=0.1.0  # OpenAI Agents SDK for agent orchestration
 tenacity>=8.0.0  # Retry logic with exponential backoff
 alembic>=1.13.0  # Database migrations
-gradio>=4.0.0
-

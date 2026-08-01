@@ -29,12 +29,21 @@ from typing import Optional
 from datetime import datetime
 import asyncio
 
-from backend.database import get_session
-from backend.models.user import User
-from backend.models.conversation import Conversation
-from backend.models.message import Message
-from backend.auth import get_current_user
-from backend.agents.task_agent import get_task_agent
+try:
+    from backend.database import get_session
+    from backend.models.user import User
+    from backend.models.conversation import Conversation
+    from backend.models.message import Message
+    from backend.auth import get_current_user
+    from backend.agents.task_agent import get_task_agent
+except ModuleNotFoundError:
+    from database import get_session
+    from models.user import User
+    from models.conversation import Conversation
+    from models.message import Message
+    from auth import get_current_user
+    from agents.task_agent import get_task_agent
+
 
 # Create router
 router = APIRouter(prefix="/api", tags=["chat"])
